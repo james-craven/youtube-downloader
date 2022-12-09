@@ -53,7 +53,7 @@ def on_complete(stream, file_path):
     mp3_path = ytfile.split('.mp4')[0]+'.mp3'
     title = os.path.basename(mp3_path)
     new_file = mp.AudioFileClip(mp4_path)
-    new_file.write_audiofile(mp3_path, verbose=False logger=None)
+    new_file.write_audiofile(mp3_path, verbose=False, logger=None)
     os.remove(mp4_path)
     print(f'Completed: {title}')
     print(f'Uploading: {title}')
