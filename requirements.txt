@@ -8,6 +8,7 @@ darkdetect==0.7.1
 decorator==4.4.2
 exceptiongroup==1.0.4
 filelock==3.8.0
+fsspec==2022.11.0
 google-api-core==2.10.2
 google-api-python-client==2.66.0
 google-auth==2.14.1
