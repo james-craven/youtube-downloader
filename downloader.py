@@ -39,6 +39,10 @@ drive = GoogleDrive(gauth)
 
 playlist = Playlist("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
 
+gfiles = drive.ListFile({'q': "'1IrESQhwTstwkiZuCNQusAXoAeTHVpTLp' in parents and trashed=false"}).GetList()
+for file in gfiles:
+    file.Trash()
+
 for url in playlist[:2]:
     print(f'Downloading: {YouTube(url).title}')
     YouTube(url).streams.filter(file_extension='mp4').first().download()
