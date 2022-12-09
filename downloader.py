@@ -7,6 +7,8 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 gauth = GoogleAuth()
 
+print('test change')
+
 # Try to load saved client credentials
 gauth.LoadCredentialsFile("mycreds.txt")
 
