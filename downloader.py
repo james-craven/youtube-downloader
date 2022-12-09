@@ -14,6 +14,7 @@ print('change2')
 for url in playlist[:1]:
     print(f'Downloading: {YouTube(url).title}')
     YouTube(url).streams.filter(file_extension='mp4').first().download()
+    print(os.listdir())
     # for file in os.listdir(folder):
     #     if re.search('mp4', file):
     #         mp4_path = os.path.join(folder,file)
