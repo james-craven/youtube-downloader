@@ -1,0 +1,17 @@
+name: run downloader.py
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+        cache: 'pip'
+    - run: pip install -r requirements.txt
+    - run: python my_script.py
