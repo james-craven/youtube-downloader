@@ -39,7 +39,7 @@ drive = GoogleDrive(gauth)
 
 playlist = Playlist("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
 
-for url in playlist[:20]:
+for url in playlist[:2]:
     print(f'Downloading: {YouTube(url).title}')
     YouTube(url).streams.filter(file_extension='mp4').first().download()
     folder = os.getcwd()
