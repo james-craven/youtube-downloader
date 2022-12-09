@@ -2,7 +2,7 @@ name: run downloader.py
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   test_pull_request:
