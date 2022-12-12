@@ -6,14 +6,14 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import multiprocessing
 from multiprocessing import current_process
-from rich import print
+from rich import print, get_console
 from rich.console import Console
 from rich.table import Table
 from rich import progress
 from concurrent.futures import ProcessPoolExecutor
 
 
-console = Console(force_terminal=True)
+console = get_console()
 
 def download(url, drive, progress, task_id):
 
