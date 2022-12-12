@@ -79,15 +79,15 @@ if __name__ == '__main__':
 
     playlist = Playlist("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
 
-    print('Trashing Old Songs From Drive')
+    print('Trashing Old Songs From Drive', flush=True)
     gfiles = drive.ListFile({'q': "'1IrESQhwTstwkiZuCNQusAXoAeTHVpTLp' in parents and trashed=false"}).GetList()
     for file in gfiles:
         file.Trash()
-    print('Trashing Complete')
+    print('Trashing Complete', flush=True)
 
 
 
-    print('Starting Downloads...\n')
+    print('Starting Downloads...\n', flush=True)
 
     songs = 20
 
