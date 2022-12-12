@@ -13,7 +13,7 @@ from rich import progress
 from concurrent.futures import ProcessPoolExecutor
 
 
-console = Console()
+console = Console(force_terminal=True)
 
 def download(url, drive, progress, task_id):
 
