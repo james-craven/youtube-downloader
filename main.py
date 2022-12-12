@@ -13,32 +13,30 @@ from rich import progress
 from concurrent.futures import ProcessPoolExecutor
 
 
-console = Console(force_terminal=True)
+
 
 def download(url, drive, progress, task_id):
 
     def on_complete(stream, file_path):
-        progress[task_id] = {"progress": 1, "total": 3}
+        progress[task_id] = {"progress": 2, "total": 4, "status": "Converting..."}
         ytfile = file_path
         mp4_path = ytfile
         mp3_path = ytfile.split('.mp4')[0]+'.mp3'
         title = os.path.basename(mp3_path).split('.mp3')[0]
-        table = Table()
-        table.add_column(header=title)
-        table.add_row(f"{current_process()} test")
         new_file = mp.AudioFileClip(mp4_path)
         new_file.write_audiofile(mp3_path, verbose=False, logger=None)
         os.remove(mp4_path)
-        progress[task_id] = {"progress": 2, "total": 3}
-        table.add_row(f"{current_process()} Conversion Completed")
+        progress[task_id] = {"progress": 3, "total": 4, "status": "Uploading..."}
         gfile = drive.CreateFile({'parents': [{'id': '1IrESQhwTstwkiZuCNQusAXoAeTHVpTLp'}], 'title': title})
         gfile.SetContentFile(mp3_path)
         gfile.Upload()
-        progress[task_id] = {"progress": 3, "total": 3}
+        progress[task_id] = {"progress": 4, "total": 4, "status": "Complete!"}
 
     try: 
+        progress[task_id] = {"progress": 1, "total": 4, "status": "Downloading..."}
         YouTube(url,on_complete_callback=on_complete).streams.filter(file_extension='mp4').first().download()
     except:
+        progress[task_id] = {"progress": 1, "total": 4, "status": "Downloading Again..."}
         YouTube(url,on_complete_callback=on_complete).streams.filter(file_extension='mp4').first().download()
 
 
@@ -94,25 +92,24 @@ if __name__ == '__main__':
     with progress.Progress(
             progress.SpinnerColumn(),
             "[progress.description]{task.description}",
+            "[bold yellow]{task.fields[status]}",
             progress.BarColumn(),
             progress.MofNCompleteColumn(),
             "[progress.percentage]{task.percentage:>3.0f}%",
-            progress.TimeRemainingColumn(),
             progress.TimeElapsedColumn(),
             refresh_per_second=20,  # bit slower updates
-            console=Console(force_terminal=True),
         ) as progress:
             futures = []  # keep track of the jobs
             with multiprocessing.Manager() as manager:
                 # this is the key - we share some state between our 
                 # main process and our worker functions
                 _progress = manager.dict()
-                overall_progress_task = progress.add_task("[green]All jobs progress:")
+                overall_progress_task = progress.add_task("[green]All jobs progress:", status="Working...", extend=True)
 
                 with ProcessPoolExecutor() as executor:
                     for url in playlist[:songs]:  # iterate over the jobs we need to run
                         # set visible false so we don't have a lot of bars all at once:
-                        task_id = progress.add_task(f"{YouTube(url).title}", visible=True)
+                        task_id = progress.add_task(f"{YouTube(url).title}", status='Loading...', visible=True)
                         futures.append(executor.submit(download, url, drive, _progress, task_id))
 
                     # monitor the progress:
@@ -125,14 +122,18 @@ if __name__ == '__main__':
                         for task_id, update_data in _progress.items():
                             latest = update_data["progress"]
                             total = update_data["total"]
+                            status = update_data["status"]
                             # update the progress bar for this task:
                             progress.update(
                                 task_id,
+                                status=status,
                                 completed=latest,
                                 total=total,
                                 visible=latest <= total,
                             )
-
+                    progress.update(
+                            overall_progress_task, completed=n_finished, total=len(futures), status="Complete!"
+                        )
                     # raise any errors:
                     for future in futures:
                         future.result()
