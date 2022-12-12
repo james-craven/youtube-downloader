@@ -6,14 +6,14 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import multiprocessing
 from multiprocessing import current_process
-from rich import print, get_console
+from rich import print
 from rich.console import Console
 from rich.table import Table
 from rich import progress
 from concurrent.futures import ProcessPoolExecutor
 
 
-console = get_console()
+console = Console(force_terminal=True)
 
 def download(url, drive, progress, task_id):
 
@@ -100,6 +100,7 @@ if __name__ == '__main__':
             progress.TimeRemainingColumn(),
             progress.TimeElapsedColumn(),
             refresh_per_second=20,  # bit slower updates
+            console=console,
         ) as progress:
             futures = []  # keep track of the jobs
             with multiprocessing.Manager() as manager:
