@@ -100,7 +100,7 @@ if __name__ == '__main__':
             progress.TimeRemainingColumn(),
             progress.TimeElapsedColumn(),
             refresh_per_second=20,  # bit slower updates
-            console=console,
+            console=Console(force_terminal=True),
         ) as progress:
             futures = []  # keep track of the jobs
             with multiprocessing.Manager() as manager:
