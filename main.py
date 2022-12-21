@@ -22,7 +22,7 @@ def download(url, drive, progress, task_id):
         ytfile = file_path
         mp4_path = ytfile
         mp3_path = ytfile.split('.mp4')[0]+'.mp3'
-        title = os.path.basename(mp3_path).split('.mp3')[0]
+        title = os.path.basename(mp3_path)
         new_file = mp.AudioFileClip(mp4_path)
         new_file.write_audiofile(mp3_path, verbose=False, logger=None)
         os.remove(mp4_path)
