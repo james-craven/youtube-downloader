@@ -1,3 +1,4 @@
+import time
 from pytube import YouTube
 from pytube import Playlist
 import os
@@ -11,7 +12,7 @@ from rich.console import Console
 from rich.table import Table
 from rich import progress
 from concurrent.futures import ProcessPoolExecutor
-
+import sys
 
 
 
@@ -87,7 +88,7 @@ if __name__ == '__main__':
 
     print('Starting Downloads...\n', flush=True)
 
-    songs = 20
+    songs = 5
 
     with progress.Progress(
             progress.SpinnerColumn(),
@@ -119,6 +120,8 @@ if __name__ == '__main__':
                         progress.update(
                             overall_progress_task, completed=n_finished, total=len(futures)
                         )
+                        sys.stderr.write(f'Total complete: {int(n_finished/len(futures)*100)}%\n')
+                        sys.stderr.flush()
                         for task_id, update_data in _progress.items():
                             latest = update_data["progress"]
                             total = update_data["total"]
@@ -134,6 +137,10 @@ if __name__ == '__main__':
                     progress.update(
                             overall_progress_task, completed=n_finished, total=len(futures), status="Complete!"
                         )
+                    time.sleep(.5)
+                    sys.stderr.write(f'Total complete: {int(n_finished/len(futures)*100)}%')
+                    sys.stderr.flush()
+                    time.sleep(.5)
                     # raise any errors:
                     for future in futures:
                         future.result()
