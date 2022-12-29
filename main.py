@@ -76,7 +76,7 @@ if __name__ == '__main__':
     drive = GoogleDrive(gauth)
 
 
-    playlist = Playlist("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
+    playlist = Playlist("https://www.youtube.com/playlist?list=PLOWDZJe5wh3j2HkdsxNe7yDeZrow5XRsD")
 
     print('Trashing Old Songs From Drive', flush=True)
     gfiles = drive.ListFile({'q': "'1IrESQhwTstwkiZuCNQusAXoAeTHVpTLp' in parents and trashed=false"}).GetList()
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     print('Starting Downloads...\n', flush=True)
 
-    songs = 5
+    songs = 14
 
     with progress.Progress(
             progress.SpinnerColumn(),

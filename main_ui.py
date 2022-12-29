@@ -16,6 +16,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import traceback, sys
+import os
+import moviepy.editor as mp
 
 class ProgressBar(QProgressBar):
     def update_value(self, value, animated=True):
@@ -32,6 +34,34 @@ class ProgressBar(QProgressBar):
             self.animation.start()
         else:
             self.setValue(value)
+
+from proglog import ProgressBarLogger
+
+class MyBarLogger(ProgressBarLogger):
+    # `window` is the class where all the gui widgets are held
+    def __init__(self, progress_callback, default_filename):
+        super().__init__(init_state=None, bars=None, ignored_bars=None,
+                 logged_bars='all', min_time_interval=0, ignore_bars_under=0)
+        self.progress_callback = progress_callback
+        self.default_filename = default_filename
+    def callback(self, **changes):
+        # Every time the logger is updated, this function is called with
+        # the `changes` dictionnary of the form `parameter: new value`.
+        # the `try` is to avoid KeyErrors before moviepy generates a `'t'` dict 
+        try:
+            index = self.state['bars']['chunk']['index']
+            total = self.state['bars']['chunk']['total']
+            percent_complete = index / total * 100
+            if percent_complete < 0:
+                percent_complete = 0
+            if percent_complete > 100:
+                percent_complete = 100
+
+            self.progress_callback.emit({'progress': percent_complete, 'link': self.default_filename})
+
+        except Exception as e:
+            # print(e)
+            pass
 
 class WorkerSignals(QObject):
     '''
@@ -52,7 +82,7 @@ class WorkerSignals(QObject):
         int indicating % progress
 
     '''
-    finished = pyqtSignal()
+    finished = pyqtSignal(str)
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
     progress = pyqtSignal(dict)
@@ -100,7 +130,7 @@ class Worker(QRunnable):
         else:
             self.signals.result.emit(result)  # Return the result of the processing
         finally:
-            self.signals.finished.emit()  # Done
+            self.signals.finished.emit(self.args[0].streams.filter(file_extension='mp4').first().default_filename)  # Done
 
 
 class Ui_MainWindow(object):
@@ -126,13 +156,13 @@ class Ui_MainWindow(object):
         self.title.setFont(font)
         self.title.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
         self.title.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.title.setStyleSheet("color:rgb(228, 0, 0);")
+        self.title.setStyleSheet("color:white;")
         self.title.setScaledContents(True)
         self.title.setAlignment(QtCore.Qt.AlignCenter)
         self.title.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.title.setObjectName("title")
         self.verticalLayout.addWidget(self.title)
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit = QtWidgets.QTextEdit(self.centralwidget)
         self.plainTextEdit.setMaximumSize(QtCore.QSize(16777215, 49))
         font = QtGui.QFont()
         font.setFamily(".New York")
@@ -142,19 +172,25 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setFont(font)
         self.plainTextEdit.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.plainTextEdit.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.plainTextEdit.setStyleSheet("background-color: white;\n"
-"color: black;")
+#         self.plainTextEdit.setStyleSheet("background-color: white;\n"
+# "color: black;")
         self.plainTextEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.plainTextEdit.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
+        self.plainTextEdit.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.plainTextEdit.setPlainText("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
+        self.plainTextEdit.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
+                 "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 221, 255), stop:1 rgb(0, 58, 109));"
+                 "border: 5px solid white;"
+                 "color: white")
         self.verticalLayout.addWidget(self.plainTextEdit)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
         self.label = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily(".New York")
-        font.setPointSize(14)
+        font.setPointSize(20)
         font.setBold(True)
         font.setWeight(75)
         self.label.setFont(font)
@@ -163,16 +199,26 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(True)
         self.label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.label.setObjectName("label")
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1)
+        # setting blur radius
+        # adding shadow to the label
+        self.label.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1))
+        self.title.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.plainTextEdit.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
         self.horizontalLayout.addWidget(self.label)
         self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily(".New York")
+        font.setPointSize(20)
         font.setBold(True)
         font.setWeight(75)
         self.spinBox.setFont(font)
         self.spinBox.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.spinBox.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.spinBox.setObjectName("spinBox")
+        self.spinBox.setStyleSheet("color: white; background-color: black;")
+        self.spinBox.setAlignment(Qt.AlignCenter)
+        self.spinBox.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.horizontalLayout.addWidget(self.spinBox)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         font = QtGui.QFont()
@@ -181,15 +227,17 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.pushButton.setStyleSheet("background-color:white;\n"
-"color:black;\n"
-"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 15px;\n"
-"border-color: black;\n"
-"padding: 4px;")
+        self.pushButton.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
+                "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 221, 255), stop:1 rgb(0, 58, 109));"
+                "border: 5px solid white;"
+                "color:white;"
+                "border-style: outset;"
+                "border-radius: 15px;"
+                "border-color: white;"
+                "padding: 8px;")
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(lambda: self.run())
+        self.pushButton.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1))
         self.horizontalLayout.addWidget(self.pushButton)
 
         self.label2 = QtWidgets.QLabel(self.centralwidget)
@@ -204,7 +252,7 @@ class Ui_MainWindow(object):
         self.label2.setWordWrap(False)
         self.label2.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.label2.setObjectName("label2")
-        self.label2.setStyleSheet("color: yellow;")
+        self.label2.setStyleSheet("color: white;")
         self.horizontalLayout.addWidget(self.label2)
         self.label2.hide()
 
@@ -213,11 +261,24 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.tableView = QtWidgets.QTableWidget(self.centralwidget)
         self.tableView.setObjectName("tableView")
+        self.tableView.setStyleSheet("QTableWidget {background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
+            "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 221, 255), stop:1 rgb(0, 58, 109));"
+            "border: 5px solid white;"
+            "color:white;"
+            "border-style: inset;"
+            "border-radius: 15px;"
+            "padding: 8px;}"
+            "QHorizontalHeader, QHorizontalHeaderItem {color: white;"
+            "background-color: transparent;"
+            "border: 5px solid white;}"
+            "QHeaderView::section {background-color: transparent;border: 3px solid white; font-size: 24px; font-weight: bold;}"
+            "QHeaderView {background-color: transparent;}"
+            "QTableCornerButton::section {background-color: transparent;}")
         self.tableView.insertColumn(self.tableView.columnCount())
         self.tableView.insertColumn(self.tableView.columnCount())
-        item = QtWidgets.QTableWidgetItem(f'Song Title')
+        item = QtWidgets.QTableWidgetItem('Song Title')
         self.tableView.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem(f'Progress Bar')
+        item = QtWidgets.QTableWidgetItem('Progress Bar')
         self.tableView.setHorizontalHeaderItem(1, item)
         self.verticalLayout.addWidget(self.tableView)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -243,14 +304,21 @@ class Ui_MainWindow(object):
             # globals()[self.title].update()
             progress_callback.emit({'progress': int(p), 'link': self.default_filename})
         
-        def completed_func(self, filepath):
-            progress_callback.emit({'progress': 100, 'link': self.default_filename})
-
+        def completed_func(self, file_path):
+            progress_callback.emit({'progress': 0, 'link': self.default_filename, 'format': 'Converting...%p%'})
+            ytfile = file_path
+            mp4_path = ytfile
+            mp3_path = ytfile.split('.mp4')[0]+'.mp3'
+            title = os.path.basename(mp3_path)
+            new_file = mp.AudioFileClip(mp4_path)
+            mylogger = MyBarLogger(progress_callback, self.default_filename)
+            new_file.write_audiofile(mp3_path, verbose=False, logger=mylogger)
+            os.remove(mp4_path)
 
         ytlink.register_on_progress_callback(progress_func)
         ytlink.register_on_complete_callback(completed_func)
         try:
-            print(ytlink.streams.filter(file_extension='mp4').first().default_filename)
+            # print(ytlink.streams.filter(file_extension='mp4').first().default_filename)
             ytlink.streams.filter(file_extension='mp4').first().download()
         except Exception as e:
             print(f'Exception: {ytlink.title}\n{e}')
@@ -281,7 +349,10 @@ class Ui_MainWindow(object):
             except:
                 pass
 
-    def thread_complete(self):
+    def thread_complete(self, link):
+        # print(f'finished {link}')
+        link = link.split('.mp4')[0]
+        globals()[link].setFormat('%p% Complete!')
         self.finished = self.finished + 1
         if self.finished >= self.spinBox.value():
             self.label2.setText('Status: Complete!')
@@ -291,6 +362,10 @@ class Ui_MainWindow(object):
     def progress_callback(self, n):
         link = n['link'].split('.mp4')[0]
         globals()[link].update_value(n['progress'])
+        try:
+            globals()[link].setFormat(n['format'])
+        except:
+            pass
 
     def run(self):
         self.label2.setText('Status: Getting Links!')
@@ -360,4 +435,15 @@ if __name__ == "__main__":
     ui.tableView.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
     for i in range(ui.tableView.columnCount()):        
         ui.tableView.setColumnWidth(i, headerSize)
+
+    p = QPalette()
+    gradient = QLinearGradient(0, 0, 768, 0)
+    gradient.setColorAt(0.0, QColor(0, 58, 109))
+    gradient.setColorAt(0.5, QColor(0, 221, 255))
+    gradient.setColorAt(1.0, QColor(0, 58, 109))
+    p.setBrush(QPalette.Window, QBrush(gradient))
+    MainWindow.setPalette(p)
+    p.setBrush(QPalette.Background, QBrush(gradient))
+    ui.plainTextEdit.setPalette(p)
+    ui.tableView.setPalette(p)
     sys.exit(app.exec_())
