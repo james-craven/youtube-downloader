@@ -177,11 +177,11 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.plainTextEdit.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.plainTextEdit.setObjectName("plainTextEdit")
-        self.plainTextEdit.setPlainText("https://www.youtube.com/playlist?list=PLrxcNWZXdQ2kDOkW-S86MyRJkZiwxhL6c")
         self.plainTextEdit.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
                  "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 221, 255), stop:1 rgb(0, 58, 109));"
                  "border: 5px solid white;"
-                 "color: white")
+                 "color: white;"
+                 "font-weight: bold")
         self.verticalLayout.addWidget(self.plainTextEdit)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -199,11 +199,11 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(True)
         self.label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.label.setObjectName("label")
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1)
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2)
         # setting blur radius
         # adding shadow to the label
-        self.label.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1))
-        self.title.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.label.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.title.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=3, yOffset=3))
         self.plainTextEdit.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
         self.horizontalLayout.addWidget(self.label)
         self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
@@ -216,7 +216,21 @@ class Ui_MainWindow(object):
         self.spinBox.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.spinBox.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.spinBox.setObjectName("spinBox")
-        self.spinBox.setStyleSheet("color: white; background-color: black;")
+        self.spinBox.setStyleSheet("QSpinBox {color: white; background-color: black; border: 3px solid black;"
+        "}"
+        "QSpinBox::up-button {subcontrol-origin: border; subcontrol-position: top right; /* position at the top right corner */ width: 16px; /* 16 + 2*1px border-width = 15px padding + 3px parent border */ border-image: url(./images/border-white.png) 1; border-width: 1px; background-color: transparent; border-color:black;"
+        "}"
+        "QSpinBox::up-button:hover {border-image: url(:/images/spinup_hover.png) 1;"
+        "}"
+        "QSpinBox::up-arrow {image: url(./images/up.png);width: 15px;height: 15px;"
+        "}"
+        "QSpinBox::down-button {subcontrol-origin: border; subcontrol-position: bottom right; /* position at the top right corner */ width: 16px; /* 16 + 2*1px border-width = 15px padding + 3px parent border */ border-image: url(./images/border-white.png) 1; border-width: 1px; background-color: transparent; border-color:black;"
+        "}"
+        "QSpinBox::down-button:hover {border-image: url(:/images/spindown_hover.png) 1;"
+        "}"
+        "QSpinBox::down-arrow {image: url(./images/down.png);width: 15px;height: 15px;"
+        "}")
+        self.spinBox.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
         self.spinBox.setAlignment(Qt.AlignCenter)
         self.spinBox.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.horizontalLayout.addWidget(self.spinBox)
@@ -228,16 +242,23 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(font)
         self.pushButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
-                "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 221, 255), stop:1 rgb(0, 58, 109));"
+                "stop:0 rgb(0, 58, 109), stop: 0.5 rgb(0, 190, 255), stop:1 rgb(0, 58, 109));"
                 "border: 5px solid white;"
                 "color:white;"
                 "border-style: outset;"
                 "border-radius: 15px;"
                 "border-color: white;"
-                "padding: 8px;")
+                "padding: 8px;"
+                "width: 65px")
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(lambda: self.run())
         self.pushButton.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1))
+        self.label3 = QLabel(self.pushButton)
+        self.label3.setText("Download")
+        self.label3.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.label3.setFont(font)
+        self.pushButton.resize(150, 150)
+        # self.label3.resize(150, 50)
         self.horizontalLayout.addWidget(self.pushButton)
 
         self.label2 = QtWidgets.QLabel(self.centralwidget)
@@ -253,6 +274,7 @@ class Ui_MainWindow(object):
         self.label2.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.label2.setObjectName("label2")
         self.label2.setStyleSheet("color: white;")
+        self.label2.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=1, yOffset=1))
         self.horizontalLayout.addWidget(self.label2)
         self.label2.hide()
 
@@ -267,7 +289,10 @@ class Ui_MainWindow(object):
             "color:white;"
             "border-style: inset;"
             "border-radius: 15px;"
-            "padding: 8px;}"
+            "padding: 8px;"
+            "gridline-color: white}"
+            "QTableWidget::item {border: 3px solid white;"
+            "}"
             "QHorizontalHeader, QHorizontalHeaderItem {color: white;"
             "background-color: transparent;"
             "border: 5px solid white;}"
@@ -276,10 +301,30 @@ class Ui_MainWindow(object):
             "QTableCornerButton::section {background-color: transparent;}")
         self.tableView.insertColumn(self.tableView.columnCount())
         self.tableView.insertColumn(self.tableView.columnCount())
+        font = QtGui.QFont()
+        font.setFamily(".New York")
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.songLabel = QLabel(self.centralwidget)
+        self.songLabel.setText('Song Title')
+        self.songLabel.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.songLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.songLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.songLabel.setFont(font)
         item = QtWidgets.QTableWidgetItem('Song Title')
-        self.tableView.setHorizontalHeaderItem(0, item)
+        self.tableView.insertRow(self.tableView.rowCount())
+        self.tableView.setCellWidget(0, 0, self.songLabel)
         item = QtWidgets.QTableWidgetItem('Progress Bar')
-        self.tableView.setHorizontalHeaderItem(1, item)
+        self.progressLabel = QLabel(self.centralwidget)
+        self.progressLabel.setText('Progress Bar')
+        self.progressLabel.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.progressLabel.setFont(font)
+        self.progressLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.progressLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.tableView.setCellWidget(0, 1, self.progressLabel)
+        self.tableView.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+        self.tableView.horizontalHeader().hide()
         self.verticalLayout.addWidget(self.tableView)
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -293,15 +338,14 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setPlaceholderText(_translate("MainWindow", "Paste Playlist URL..."))
         self.label.setText(_translate("MainWindow", "Number of songs to download:"))
         self.label2.setText(_translate("MainWindow", "Status..."))
-        self.pushButton.setText(_translate("MainWindow", "Download"))
+        self.label3.setText(_translate("MainWindow", "Download"))
 
-    def download(self, ytlink, progress_callback):
+    def download(self, ytlink, row_num, progress_callback):
+        filename = ytlink.streams.filter(file_extension='mp4').first().default_filename.split('.mp4')[0]
+        progress_callback.emit({'filename': filename, 'row_num': row_num})
         def progress_func(self, stream, bytes_remaining):
             size = self.filesize
             p = (float(abs(bytes_remaining-size)/size))*float(100)
-            # globals()[YouTube(url).title].setValue(int(progress))
-            # globals()[self.title].setValue(int(p))
-            # globals()[self.title].update()
             progress_callback.emit({'progress': int(p), 'link': self.default_filename})
         
         def completed_func(self, file_path):
@@ -309,7 +353,6 @@ class Ui_MainWindow(object):
             ytfile = file_path
             mp4_path = ytfile
             mp3_path = ytfile.split('.mp4')[0]+'.mp3'
-            title = os.path.basename(mp3_path)
             new_file = mp.AudioFileClip(mp4_path)
             mylogger = MyBarLogger(progress_callback, self.default_filename)
             new_file.write_audiofile(mp3_path, verbose=False, logger=mylogger)
@@ -324,31 +367,6 @@ class Ui_MainWindow(object):
             print(f'Exception: {ytlink.title}\n{e}')
             pass
 
-    def addProgressBars(self):
-        s = self.spinBox.value()
-        for i in range(s):
-            link = self.p[i]
-            try:
-                link = YouTube(link).streams.filter(file_extension='mp4').first().default_filename.split('.mp4')[0]
-                globals()[link] = ProgressBar(minimum=0, maximum=100, textVisible=True, text="Downloading...", format="Downloading...%p%", alignment=Qt.AlignCenter)
-                globals()[link].setStyleSheet("QProgressBar::chunk "
-                    "{"
-                    "background-color: LawnGreen;"
-                    "color: black;"
-                    "text-align: center;"
-                    "}"
-                    "QProgressBar "
-                    "{"
-                    "border: 2px solid grey;"
-                    "border-radius: 5px;"
-                    "background-color: DarkRed;"
-                    "color: black;"
-                    "text-align: center;"
-                    "}")
-                ui.tableView.setCellWidget(i, 1, globals()[link])
-            except:
-                pass
-
     def thread_complete(self, link):
         # print(f'finished {link}')
         link = link.split('.mp4')[0]
@@ -358,69 +376,68 @@ class Ui_MainWindow(object):
             self.label2.setText('Status: Complete!')
             self.label2.adjustSize()
             app.processEvents()
+            self.end = time.time()
+            print(f'Application Time: {self.end - self.start}')
 
     def progress_callback(self, n):
-        link = n['link'].split('.mp4')[0]
-        globals()[link].update_value(n['progress'])
+        try:
+            link = n['link'].split('.mp4')[0]
+            globals()[link].update_value(n['progress'])
+        except:
+            pass
         try:
             globals()[link].setFormat(n['format'])
         except:
             pass
+        try:
+            item = QtWidgets.QLabel(n['filename'])
+            item.setGraphicsEffect(QGraphicsDropShadowEffect(blurRadius=5, xOffset=2, yOffset=2))
+            itemFont = self.tableView.font()
+            itemFont.setBold(True)
+            itemFont.setPointSize(18)
+            item.setFont(itemFont)
+            ui.tableView.setCellWidget(n['row_num'], 0, item)
+            globals()[n['filename']] = ProgressBar(minimum=0, maximum=100, textVisible=True, text="Downloading...", format="Downloading...%p%", alignment=Qt.AlignCenter)
+            globals()[n['filename']].setStyleSheet("QProgressBar::chunk "
+                "{"
+                "background-color: LawnGreen;"
+                "color: black;"
+                "text-align: center;"
+                "}"
+                "QProgressBar "
+                "{"
+                "border: 2px solid grey;"
+                "border-radius: 5px;"
+                "background-color: DarkRed;"
+                "color: black;"
+                "text-align: center;"
+                "}")
+            ui.tableView.setCellWidget(n['row_num'], 1, globals()[n['filename']])
+        except:
+            pass
 
     def run(self):
-        self.label2.setText('Status: Getting Links!')
-        self.label2.adjustSize()
-        self.label2.show()
-        app.processEvents()
+        self.start = time.time()
         s = self.spinBox.value()
         self.url = self.plainTextEdit.toPlainText()
         self.p = Playlist(self.url)
         self.youtubeList = []
         for link in self.p[:s]:
             self.youtubeList.append(YouTube(link))
-        self.tableView.setRowCount(len(self.youtubeList))
+        self.tableView.setRowCount(len(self.youtubeList)+1)
         self.threadpool = QThreadPool()
-        for i in range(s):
-            try:
-                filename = self.youtubeList[i].streams.filter(file_extension='mp4').first().default_filename.split('.mp4')[0]
-                item = QtWidgets.QTableWidgetItem(filename)
-                ui.tableView.setItem(i, 0, item)
-            except:
-                item = QtWidgets.QTableWidgetItem(f'Unavailable: {self.youtubeList[i].title}')
-                ui.tableView.setItem(i, 0, item)
-                pass
-        # self.addProgressBars()
-            try:
-                    link = self.youtubeList[i].streams.filter(file_extension='mp4').first().default_filename.split('.mp4')[0]
-                    globals()[link] = ProgressBar(minimum=0, maximum=100, textVisible=True, text="Downloading...", format="Downloading...%p%", alignment=Qt.AlignCenter)
-                    globals()[link].setStyleSheet("QProgressBar::chunk "
-                        "{"
-                        "background-color: LawnGreen;"
-                        "color: black;"
-                        "text-align: center;"
-                        "}"
-                        "QProgressBar "
-                        "{"
-                        "border: 2px solid grey;"
-                        "border-radius: 5px;"
-                        "background-color: DarkRed;"
-                        "color: black;"
-                        "text-align: center;"
-                        "}")
-                    ui.tableView.setCellWidget(i, 1, globals()[link])
-                    app.processEvents()
-            except:
-                pass
+
         print(f'Multithreading with max {self.threadpool.maxThreadCount()}')
         for i in range(s):  
+            row_num = i + 1
             link = self.youtubeList[i]
-            worker = Worker(self.download, link)
+            worker = Worker(self.download, link, row_num)
             worker.signals.progress.connect(self.progress_callback)
             worker.signals.finished.connect(self.thread_complete)
             self.threadpool.start(worker)
         self.label2.setText('Status: Downloading!')
         self.label2.adjustSize()
-        app.processEvents()
+        # app.processEvents()
 
 
 if __name__ == "__main__":
